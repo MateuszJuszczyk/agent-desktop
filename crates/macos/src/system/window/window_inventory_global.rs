@@ -52,10 +52,16 @@ fn capture_global_once(
         focused_only,
         || crate::system::app::workspace_apps::window_owner_snapshot_until(deadline),
         |eligible_pids| {
-            crate::system::window::cg_window::window_records_until(
+            let records = crate::system::window::cg_window::window_records_until(
                 deadline,
                 crate::system::window::cg_window::WindowRecordScope::Pids(eligible_pids),
-            )
+            )?;
+            Ok(crate::system::window::window_admission::retain_ax_admitted(
+                records,
+                |pid| {
+                    crate::system::window::window_ax_state::standard_window_ids_until(pid, deadline)
+                },
+            ))
         },
         |pid| crate::system::window::window_ax_state::read_frontmost_until(pid, deadline),
     )?;

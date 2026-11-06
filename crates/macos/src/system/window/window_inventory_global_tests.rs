@@ -88,6 +88,7 @@ fn window_owner_without_launch_date_uses_live_process_generation() {
         pid,
         title: Some("Current".into()),
         window_number: 1,
+        layer: 0,
         bounds: Rect {
             x: 0.0,
             y: 0.0,
@@ -375,6 +376,7 @@ fn record(pid: i32, window_number: i64, title: &str) -> WindowRecord {
         pid,
         title: Some(title.into()),
         window_number,
+        layer: 0,
         bounds: Rect {
             x: 0.0,
             y: 0.0,
@@ -391,5 +393,6 @@ fn ax_state(focused: Option<(Option<String>, Option<i64>)>) -> WindowAxState {
         focused,
         minimized_by_id: FxHashMap::default(),
         accessible_window_ids: FxHashSet::default(),
+        standard_window_ids: FxHashSet::default(),
     }
 }
