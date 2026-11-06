@@ -46,7 +46,7 @@ pub(crate) fn list_windows_until(
                 Ok(owners)
             },
             |owners| owners.matching_pids(app_filter),
-            |pids| {
+            |pids, _| {
                 require_running_app(pids, app_filter)?;
                 cg_window::window_records_until(deadline, cg_window::WindowRecordScope::Pids(pids))
             },

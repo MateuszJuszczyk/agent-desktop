@@ -299,9 +299,10 @@ fn global_capture_orders_appkit_cg_ax_appkit_and_filters_before_cg() {
             snapshot_count.set(ordinal + 1);
             Ok(owners.clone())
         },
-        |eligible| {
+        |eligible, frontmost| {
             events.borrow_mut().push("cg");
             assert_eq!(eligible, &FxHashSet::from_iter([10, 20]));
+            assert_eq!(frontmost, Some(10));
             Ok(vec![record(10, 1, "Front")])
         },
         |_| {
@@ -329,7 +330,7 @@ fn post_ax_snapshot_is_captured_and_churn_wins_over_stale_ax_failure() {
             snapshot_count.set(snapshot_count.get() + 1);
             Ok(snapshots.borrow_mut().pop_front().unwrap())
         },
-        |_| Ok(vec![record(10, 1, "Front")]),
+        |_, _| Ok(vec![record(10, 1, "Front")]),
         |_| Err(AdapterError::permission_denied()),
     )
     .unwrap_err();
@@ -348,7 +349,7 @@ fn scoped_pid_selection_is_still_bound_to_the_owner_generation() {
     let error = capture_stable_with(
         || Ok(snapshots.borrow_mut().pop_front().unwrap()),
         |_| FxHashSet::from_iter([10]),
-        |selected| {
+        |selected, _| {
             assert_eq!(selected, &FxHashSet::from_iter([10]));
             Ok(vec![record(10, 1, "Target")])
         },
